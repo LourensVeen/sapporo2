@@ -2,6 +2,7 @@ CXX ?= g++
 CC ?= gcc
 PREFIX ?= /usr/local
 
+
 .PHONY: all
 all: libsapporo.a libsapporo.so emulated_interfaces
 
@@ -101,7 +102,7 @@ NVCCFLAGS += -Isrc
 KERNELS = $(PTX) $(PTXH)
 
 %.ptx: %.cu
-	$(NVCC) $(NVCCFLAGS) -ptx $< -o $@
+	$(NVCC) --forward-unknown-to-host-compiler $(CXXFLAGS) $(NVCCFLAGS) -ptx $< -o $@
 
 src/CUDA/%.ptxh: src/CUDA/%.ptx
 	xxd -i $< $@
@@ -139,7 +140,7 @@ endif
 # Main implementation
 CXX_SRC := $(wildcard src/*.cpp src/SSE_AVX/*.cpp)
 OBJS := $(CXX_SRC:%.cpp=%.o)
-INCLUDES = -Isrc
+INCLUDES += -Isrc
 CXXFLAGS += $(INCLUDES) -fPIC -g -O3 -Wall -Wextra -Wstrict-aliasing=2 -fopenmp
 
 src/sapporohostclass.o: $(KERNELS)
